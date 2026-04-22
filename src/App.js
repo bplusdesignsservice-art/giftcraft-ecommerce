@@ -4090,7 +4090,7 @@ const Checkout = () => {
   const [availableCoupons, setAvailableCoupons] = useState([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cod');
 
-  const UPI_ID = "9176501954"; // Replace with your actual UPI number
+  const UPI_ID = "9176501954@okhdfcbank"; // Replace with your actual UPI number
 
   useEffect(() => {
     const fetchCoupons = async () => {
