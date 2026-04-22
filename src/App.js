@@ -2017,11 +2017,13 @@ const AdminDashboard = () => {
   );
 };
 
-// User Profile Component
+// User Profile Component with List View Interface
 const UserProfile = () => {
   const { user, selectedCountry, convertPrice } = useContext(AppContext);
   const [userOrders, setUserOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'orders', 'settings'
+  const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -2048,53 +2050,333 @@ const UserProfile = () => {
   return (
     <div className="user-profile">
       <div className="container">
+        {/* Profile Header */}
         <div className="profile-header">
-          <div className="profile-avatar">👤</div>
-          <h1>My Account</h1>
-          <p>Welcome back, {user?.name || user?.email}</p>
+          <div className="profile-avatar">
+            <div className="avatar-circle">
+              <span className="avatar-icon">👤</span>
+            </div>
+            <div className="avatar-status online"></div>
+          </div>
+          <div className="profile-header-info">
+            <h1>My Account</h1>
+            <p>Welcome back, {user?.name || user?.email}</p>
+          </div>
         </div>
 
-        <div className="profile-sections">
-          <div className="profile-info-card">
-            <h3>Account Information</h3>
-            <div className="info-row"><span>Name:</span><span>{user?.name || 'Not set'}</span></div>
-            <div className="info-row"><span>Email:</span><span>{user?.email}</span></div>
-            <div className="info-row"><span>Member Since:</span><span>{new Date().toLocaleDateString()}</span></div>
-            <button className="btn-view-orders" onClick={() => navigate('/orders')}>
-              📦 View All Orders
-            </button>
-          </div>
+        {/* Tab Navigation */}
+        <div className="profile-tabs">
+          <button 
+            className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
+            onClick={() => setActiveTab('overview')}
+          >
+            📊 Overview
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'orders' ? 'active' : ''}`}
+            onClick={() => setActiveTab('orders')}
+          >
+            📦 My Orders ({userOrders.length})
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
+            onClick={() => setActiveTab('settings')}
+          >
+            ⚙️ Settings
+          </button>
+        </div>
 
-          <div className="profile-orders">
-            <h3>Recent Orders ({Math.min(userOrders.length, 3)})</h3>
-            {userOrders.length === 0 ? (
-              <div className="no-orders"><p>You haven't placed any orders yet.</p><button className="btn-primary" onClick={() => navigate('/shop')}>Start Shopping</button></div>
-            ) : (
-              <div className="orders-list">
-                {userOrders.slice(0, 3).map(order => (
-                  <div key={order.id} className="order-card">
-                    <div className="order-header"><span className="order-id">Order #{order.id.slice(0, 8)}</span><span className={`order-status ${order.status}`}>{order.status || 'Pending'}</span></div>
-                    <div className="order-date">{new Date(order.createdAt).toLocaleDateString()}</div>
-                    {order.transactionId && <div className="transaction-id">🏦 TXN: {order.transactionId}</div>}
-                    <div className="order-items">{order.items?.slice(0, 2).map(item => <div key={item.id} className="order-item"><span>{item.name} x{item.quantity}</span><span>{order.currency || selectedCountry.currency}{order.subtotal}</span></div>)}</div>
-                    {order.items?.length > 2 && <div className="more-items">+{order.items.length - 2} more items</div>}
-                    <div className="order-total">Total: {order.currency || selectedCountry.currency}{order.total}</div>
-                  </div>
-                ))}
-                {userOrders.length > 3 && (
-                  <button className="btn-view-all" onClick={() => navigate('/orders')}>
-                    View All {userOrders.length} Orders →
+        {/* Overview Tab */}
+        {activeTab === 'overview' && (
+          <div className="profile-sections">
+            {/* Account Information Card */}
+            <div className="profile-info-card">
+              <div className="card-header">
+                <h3>📋 Account Information</h3>
+                <button className="btn-edit" onClick={() => setActiveTab('settings')}>
+                  ✏️ Edit
+                </button>
+              </div>
+              <div className="info-list">
+                <div className="info-row">
+                  <span className="info-label">👤 Name:</span>
+                  <span className="info-value">{user?.name || 'Not set'}</span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">📧 Email:</span>
+                  <span className="info-value">{user?.email}</span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">📅 Member Since:</span>
+                  <span className="info-value">{new Date().toLocaleDateString()}</span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">🌍 Default Currency:</span>
+                  <span className="info-value">{selectedCountry?.currency} {selectedCountry?.code}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="stats-grid">
+              <div className="stat-card">
+                <div className="stat-icon">📦</div>
+                <div className="stat-info">
+                  <h4>Total Orders</h4>
+                  <p className="stat-number">{userOrders.length}</p>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon">💰</div>
+                <div className="stat-info">
+                  <h4>Total Spent</h4>
+                  <p className="stat-number">
+                    {selectedCountry?.currency}
+                    {userOrders.reduce((sum, order) => sum + (order.total || 0), 0).toFixed(2)}
+                  </p>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon">⭐</div>
+                <div className="stat-info">
+                  <h4>Reviews</h4>
+                  <p className="stat-number">0</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Orders Preview */}
+            <div className="profile-orders">
+              <div className="section-header">
+                <h3>🕒 Recent Orders</h3>
+                <button className="btn-link" onClick={() => setActiveTab('orders')}>
+                  View All →
+                </button>
+              </div>
+              {userOrders.length === 0 ? (
+                <div className="no-orders">
+                  <p>You haven't placed any orders yet.</p>
+                  <button className="btn-primary" onClick={() => navigate('/shop')}>
+                    Start Shopping
                   </button>
+                </div>
+              ) : (
+                <div className="orders-list-view">
+                  {userOrders.slice(0, 3).map(order => (
+                    <div key={order.id} className="order-list-item">
+                      <div className="order-list-header">
+                        <div className="order-id-badge">
+                          <span className="badge-icon">#️⃣</span>
+                          <span>Order #{order.id.slice(0, 8)}</span>
+                        </div>
+                        <div className={`order-status-badge ${order.status || 'pending'}`}>
+                          {order.status || 'Pending'}
+                        </div>
+                      </div>
+                      <div className="order-list-details">
+                        <div className="order-date">
+                          📅 {new Date(order.createdAt).toLocaleDateString()}
+                        </div>
+                        {order.transactionId && (
+                          <div className="transaction-id">
+                            🏦 TXN: {order.transactionId.slice(0, 12)}...
+                          </div>
+                        )}
+                        <div className="order-items-list">
+                          {order.items?.slice(0, 2).map(item => (
+                            <div key={item.id} className="order-item-row">
+                              <span>{item.name} x{item.quantity}</span>
+                              <span>{order.currency || selectedCountry.currency}{item.price * item.quantity}</span>
+                            </div>
+                          ))}
+                          {order.items?.length > 2 && (
+                            <div className="more-items">+{order.items.length - 2} more items</div>
+                          )}
+                        </div>
+                        <div className="order-total">
+                          <strong>Total:</strong> {order.currency || selectedCountry.currency}{order.total}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Orders Tab with List/Grid View Toggle */}
+        {activeTab === 'orders' && (
+          <div className="orders-full-view">
+            <div className="orders-header">
+              <h3>📦 All Orders ({userOrders.length})</h3>
+              <div className="view-controls">
+                <button 
+                  className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
+                  onClick={() => setViewMode('list')}
+                >
+                  📋 List View
+                </button>
+                <button 
+                  className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                  onClick={() => setViewMode('grid')}
+                >
+                  🔲 Grid View
+                </button>
+              </div>
+            </div>
+
+            {userOrders.length === 0 ? (
+              <div className="no-orders-full">
+                <div className="empty-state-icon">🛒</div>
+                <p>You haven't placed any orders yet.</p>
+                <button className="btn-primary" onClick={() => navigate('/shop')}>
+                  Start Shopping
+                </button>
+              </div>
+            ) : (
+              <div className={`orders-container ${viewMode}`}>
+                {viewMode === 'list' ? (
+                  // List View
+                  <div className="orders-list-view-full">
+                    {userOrders.map(order => (
+                      <div key={order.id} className="order-list-item-full">
+                        <div className="order-main-info">
+                          <div className="order-summary">
+                            <div className="order-number">
+                              <strong>Order #{order.id.slice(0, 8)}</strong>
+                            </div>
+                            <div className="order-meta">
+                              <span>📅 {new Date(order.createdAt).toLocaleDateString()}</span>
+                              <span>🕒 {new Date(order.createdAt).toLocaleTimeString()}</span>
+                            </div>
+                          </div>
+                          <div className="order-status-large">
+                            <span className={`status-badge ${order.status || 'pending'}`}>
+                              {order.status || 'Pending'}
+                            </span>
+                          </div>
+                          <div className="order-total-large">
+                            <strong>Total:</strong> {order.currency || selectedCountry.currency}{order.total}
+                          </div>
+                          <button 
+                            className="btn-view-details"
+                            onClick={() => navigate(`/orders/${order.id}`)}
+                          >
+                            View Details →
+                          </button>
+                        </div>
+                        {order.items && (
+                          <div className="order-items-preview">
+                            {order.items.slice(0, 3).map(item => (
+                              <div key={item.id} className="preview-item">
+                                <span>{item.name}</span>
+                                <span>x{item.quantity}</span>
+                                <span>{order.currency || selectedCountry.currency}{item.price * item.quantity}</span>
+                              </div>
+                            ))}
+                            {order.items.length > 3 && (
+                              <div className="more-items">+{order.items.length - 3} more</div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  // Grid View
+                  <div className="orders-grid-view">
+                    {userOrders.map(order => (
+                      <div key={order.id} className="order-grid-item">
+                        <div className="order-grid-header">
+                          <span className="order-id-grid">#{order.id.slice(0, 8)}</span>
+                          <span className={`status-badge-small ${order.status || 'pending'}`}>
+                            {order.status || 'Pending'}
+                          </span>
+                        </div>
+                        <div className="order-grid-date">
+                          📅 {new Date(order.createdAt).toLocaleDateString()}
+                        </div>
+                        <div className="order-grid-items">
+                          {order.items?.slice(0, 2).map(item => (
+                            <div key={item.id} className="grid-item">
+                              {item.name} x{item.quantity}
+                            </div>
+                          ))}
+                          {order.items?.length > 2 && (
+                            <div className="more-items-grid">+{order.items.length - 2}</div>
+                          )}
+                        </div>
+                        <div className="order-grid-total">
+                          Total: {order.currency || selectedCountry.currency}{order.total}
+                        </div>
+                        <button 
+                          className="btn-grid-details"
+                          onClick={() => navigate(`/orders/${order.id}`)}
+                        >
+                          View Order
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             )}
           </div>
-        </div>
+        )}
+
+        {/* Settings Tab */}
+        {activeTab === 'settings' && (
+          <div className="settings-panel">
+            <div className="settings-section">
+              <h3>Profile Settings</h3>
+              <div className="settings-form">
+                <div className="form-group">
+                  <label>Full Name</label>
+                  <input type="text" defaultValue={user?.name || ''} placeholder="Enter your name" />
+                </div>
+                <div className="form-group">
+                  <label>Email Address</label>
+                  <input type="email" defaultValue={user?.email} disabled />
+                  <small>Email cannot be changed</small>
+                </div>
+                <div className="form-group">
+                  <label>Phone Number</label>
+                  <input type="tel" placeholder="Add phone number" />
+                </div>
+                <div className="form-group">
+                  <label>Default Currency</label>
+                  <select>
+                    <option value="USD">USD - US Dollar</option>
+                    <option value="EUR">EUR - Euro</option>
+                    <option value="GBP">GBP - British Pound</option>
+                  </select>
+                </div>
+                <button className="btn-save">Save Changes</button>
+              </div>
+            </div>
+            
+            <div className="settings-section">
+              <h3>Address Book</h3>
+              <div className="address-list">
+                <div className="address-card">
+                  <div className="address-type">🏠 Home Address</div>
+                  <p>No address added yet</p>
+                  <button className="btn-add-address">+ Add Address</button>
+                </div>
+              </div>
+            </div>
+
+            <div className="settings-section danger-zone">
+              <h3>Danger Zone</h3>
+              <button className="btn-delete-account">Delete Account</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
-
 // Hero Image Component - Fixed and Accessible
 const HeroImage = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
