@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/giftcraft-ecommerce/static/css/main.6f5e6104.css",
+    "main.js": "/giftcraft-ecommerce/static/js/main.392e9871.js",
+    "index.html": "/giftcraft-ecommerce/index.html",
+    "main.6f5e6104.css.map": "/giftcraft-ecommerce/static/css/main.6f5e6104.css.map",
+    "main.392e9871.js.map": "/giftcraft-ecommerce/static/js/main.392e9871.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.6f5e6104.css",
+    "static/js/main.392e9871.js"
+  ]
+}
