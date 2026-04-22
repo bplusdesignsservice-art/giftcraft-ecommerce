@@ -2352,25 +2352,13 @@ const UserProfile = () => {
                     <option value="GBP">GBP - British Pound</option>
                   </select>
                 </div>
-                <button className="btn-save">Save Changes</button>
+                <button className="btn-save">active</button>
               </div>
             </div>
             
-            <div className="settings-section">
-              <h3>Address Book</h3>
-              <div className="address-list">
-                <div className="address-card">
-                  <div className="address-type">🏠 Home Address</div>
-                  <p>No address added yet</p>
-                  <button className="btn-add-address">+ Add Address</button>
-                </div>
-              </div>
-            </div>
+          
 
-            <div className="settings-section danger-zone">
-              <h3>Danger Zone</h3>
-              <button className="btn-delete-account">Delete Account</button>
-            </div>
+            
           </div>
         )}
       </div>
