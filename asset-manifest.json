@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/giftcraft-ecommerce/static/css/main.6f5e6104.css",
-    "main.js": "/giftcraft-ecommerce/static/js/main.392e9871.js",
-    "index.html": "/giftcraft-ecommerce/index.html",
-    "main.6f5e6104.css.map": "/giftcraft-ecommerce/static/css/main.6f5e6104.css.map",
-    "main.392e9871.js.map": "/giftcraft-ecommerce/static/js/main.392e9871.js.map"
+    "main.css": "/static/css/main.6f5e6104.css",
+    "main.js": "/static/js/main.55ce7732.js",
+    "index.html": "/index.html",
+    "main.6f5e6104.css.map": "/static/css/main.6f5e6104.css.map",
+    "main.55ce7732.js.map": "/static/js/main.55ce7732.js.map"
   },
   "entrypoints": [
     "static/css/main.6f5e6104.css",
-    "static/js/main.392e9871.js"
+    "static/js/main.55ce7732.js"
   ]
 }
