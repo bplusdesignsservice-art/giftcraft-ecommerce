@@ -4061,15 +4061,12 @@ const Login = () => {
           <div className="auth-footer">
             <p>{isLogin ? "Don't have an account? " : "Already have an account? "}<button onClick={() => setIsLogin(!isLogin)}>{isLogin ? 'Sign Up' : 'Login'}</button></p>
           </div>
-          <div className="demo-credentials">
-            <p><strong>Demo Credentials:</strong></p>
-            <p>👤 <strong>Customer:</strong> customer@example.com | password: customer123</p>
-            <p>👑 <strong>Admin:</strong> admin@brinnovate.in | password: admin123</p>
-            <p className="info-note">💡 Use any email and password (min 6 chars) to create a customer account</p>
+        
+           
           </div>
         </div>
       </div>
-    </div>
+    
   );
 };
 
